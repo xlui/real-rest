@@ -20,5 +20,6 @@ public class RestApplication implements CommandLineRunner {
 	public void run(String... strings) throws Exception {
 		User user = new User("1", "dev");
 		userRepository.save(user);
+		System.out.println("Init user success!");
 	}
 }

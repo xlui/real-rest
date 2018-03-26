@@ -30,6 +30,10 @@ http://example.com/{user_id}/
 
 所以我产生了一个把这些示例写下来的想法，一方面是为了更好的掌握，另一方面也是为了将来能够在用到的时候方便查阅。
 
+PS:
+
+在 RESTful 服务中，身份验证是十分重要的。但是 HTTP 不能安全的传递密码信息，所以需要一个安全措施来保护我们的数据。最常用的做法是 **Token**，代码中会给出相关示例。
+
 ## 目录
 
 - [Java Spring version](#java-spring-version)
@@ -94,6 +98,60 @@ public class Controller {
     public void delete(@PathVariable Long id) {
         userRepository.delete(id);
     }
+}
+```
+
+生成与验证 Token:
+
+```java
+package me.xlui.rest.util;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+
+import java.time.Duration;
+import java.util.Date;
+
+public class JWTUtils {
+	public static boolean verify(String token, String username, String password) {
+		Algorithm algorithm = Algorithm.HMAC256(password.getBytes());
+		JWTVerifier verifier = JWT.require(algorithm)
+				.withClaim("username", username)
+				.build();
+		try {
+			verifier.verify(token);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	public static String getUsername(String token) {
+		try {
+			DecodedJWT decodedJWT = JWT.decode(token);
+			return decodedJWT.getClaim("username").asString();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	public static String sign(String username, String password) {
+		Algorithm algorithm = Algorithm.HMAC256(password.getBytes());
+		try {
+			return JWT.create()
+					.withClaim("username", username)
+					.withExpiresAt(new Date(expire()))
+					.sign(algorithm);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	private static long expire() {
+		return System.currentTimeMillis() + Duration.ofDays(1).toMillis();
+	}
 }
 ```
 
