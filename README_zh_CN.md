@@ -1,38 +1,37 @@
-# Build Real RESTful Application
+# 构建真正的 RESTful 应用
 
-**REpresentational State Transfer(REST)** is an architectural style that defines a set of constraints and properties based on [HTTP](https://en.wikipedia.org/wiki/HTTP). Web Services that confirm to the REST architectural style, or **RESTful** web services provide interoperability between computer systems on the Internet. REST-compliant web services allow the requesting systems to access and manipulate textual representations of web resources by using a uniform and predefined set of [stateless](https://en.wikipedia.org/wiki/Stateless_protocol) operations.
+**表现层状态转移(REST)** 是一种结构风格，它基于 HTTP 定义了一组约束和属性。符合 RESTful 架构风格的 Web 服务使得 Internet 上计算机之间具有了互通性。符合 REST 的 Web 服务允许请求通过统一预定义的**无状态**操作来访问文本化的 Web 资源。
 
-For a long time I'm using REST service hastily. I'm just using method **GET** and **POST** for almost every thing such as **UPDATE**, **DELETE**. In this way, the url I built is likes this:
+很长一段时间我只是在简单的使用 REST 服务的一部分。我只用了 **GET** 和 **POST** 方法来做一切事情，因为用起来实在太简单了。这种模式下，我所构建的 URL 是这样的：
 
 ```bash
-# for GET, using HTTP GET to request
+# 使用 HTTP GET 来获取数据
 http://example.com/{user_id}/
-# for UPDATE, using HTTP POST to request
+# 使用 HTTP POST 来更新数据
 http://example.com/{user_id}/update
-# FOR DELETE, using HTTP GET to request
+# 使用 HTTP GET 来删除数据
 http://example.com/{user_id}/delete
 ```
 
-All things I need to do is to request the url, and the server will do it well.
+我需要做的仅仅是利用 **GET** 或者 **POST** 请求一下上面的 URL，服务器会做好一切事情。
 
-Recently, I have reviewed that what RESTful service is. And I was surprised to find that other HTTP method such as **PUT**, **PATCH**, **DELETE** was deprecated because of my ignorant.
+最近，我重新审视了 RESTful 的定义，并且感觉自己之前的做法并不是很合理。因为我仅仅用了 **GET**、**POST** 方法，完全忽视了 **PUT**、**PATCH**、**DELETE** 等方法。这也使得我的 URL 中包含了无用的字段。
 
-Actually, RESTful service should be represented as follows:
+事实上，RESTful 服务的 URL 应该是这样：
 
 ```bash
-# for GET, using HTTP GET to request
+# 使用 HTTP GET 来获取数据
 http://example.com/{user_id}/
-# for UPDATE, using HTTP PUT to request
+# 使用 HTTP PUT 来更新数据
 http://example.com/{user_id}/
-# FOR DELETE, using HTTP DELETE to request
+# 使用 HTTP DELETE 来删除数据
 http://example.com/{user_id}/
 ```
 
-So it comes to me an idea that to write them out. Write out is a good way to have these concepts in my hand. Also, write out will make them an example for the future development.
+所以我产生了一个把这些示例写下来的想法，一方面是为了更好的掌握，另一方面也是为了将来能够在用到的时候方便查阅。
 
-## Table of Contents
+## 目录
 
-- [中文](README_zh_CN.md)
 - [Java Spring version](#java-spring-version)
 - [Python Flask version](#python-flask-version)
 
