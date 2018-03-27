@@ -261,3 +261,26 @@ def handle_my_exception(error: MyException):
 if __name__ == '__main__':
     app.run()
 ```
+
+Token generate and verify:
+
+```py
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+
+def generate_token(self, expiration=3600):
+    # default expiration time: 1 hour
+    serializer = Serializer(Config.SECRET_KEY, expires_in=expiration)
+    return serializer.dumps({
+        'username': self.username
+    })
+
+@staticmethod
+def verify_token(token):
+    serializer = Serializer(Config.SECRET_KEY)
+    try:
+        data = serializer.loads(token) # type: dict
+        return User.query.get(data.get('username'))
+    except Exception as e:
+        print(e)
+        return None
+```

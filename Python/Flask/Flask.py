@@ -1,4 +1,5 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, current_app
+from flask_script import Manager, Shell
 
 from app import db
 from app.models import User
@@ -7,6 +8,7 @@ from conf.config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
+manager = Manager(app)
 db.init_app(app)
 
 
@@ -88,6 +90,37 @@ def delete(user_id):
         raise MyException('user id is invalid!')
 
 
+@app.route('/login', methods=['POST'])
+def login():
+    if not request.json or 'username' not in request.json:
+        raise MyException('request body must be in JSON format!')
+    user = User.query.get(request.json.get('username'))  # type: User
+    if not user:
+        raise MyException('Username is invalid!')
+    if user.password == request.json.get('password'):
+        return jsonify({
+            'login': 'Success!',
+            'token': user.generate_token().decode('utf-8')
+        })
+    else:
+        raise MyException('Password is incorrect!')
+
+
+@app.route('/verify', methods=['GET'])
+def verify():
+    token = request.headers.get('authorization')
+    if not token:
+        raise MyException('Must include token in request header!')
+    user = User.verify_token(token)  # type: User
+    if user:
+        return jsonify({
+            'verify': 'Success',
+            'user': user.username
+        })
+    else:
+        raise MyException('Token is invalid!')
+
+
 @app.errorhandler(MyException)
 def handle_my_exception(error: MyException):
     response = jsonify(error.to_dict())
@@ -96,4 +129,7 @@ def handle_my_exception(error: MyException):
 
 
 if __name__ == '__main__':
-    app.run()
+    def make_shell_context():
+        return dict(User=User, app=current_app, db=db)
+    manager.add_command('shell', Shell(make_context=make_shell_context))
+    manager.run()
